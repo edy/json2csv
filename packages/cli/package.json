@@ -28,13 +28,18 @@
     "json2csv": "./bin/json2csv.js"
   },
   "scripts": {
-    "lint": "eslint bin test",
+    "lint": "eslint src test",
+    "build:mjs": "tsc --module esnext --outDir ./bin",
+    "build": "npm run build:mjs",
+    "pretest": "npm run build",
+    "test:raw": "node test",
     "test": "npm run test:raw | tap-spec",
     "test-with-coverage": "c8 --reporter=text npm test",
-    "test:raw": "node test",
-    "deprendencies:update-internal": "npm uninstall @json2csv/node && npm install @json2csv/node"
+    "deprendencies:update-internal": "npm uninstall @json2csv/node && npm install @json2csv/cli",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@json2csv/formatters": "^6.1.2",
     "@json2csv/node": "^6.1.2",
     "commander": "^9.3.0"
   }
