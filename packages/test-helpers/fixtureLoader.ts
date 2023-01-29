@@ -10,20 +10,25 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const csvDirectory = join(__dirname, './fixtures/csv');
 const jsonDirectory = join(__dirname, './fixtures/json');
 
-function getImportAssertion(filePath) {
+function getImportAssertion(filePath: string): { assert: { type: string } } | undefined {
   return extname(filePath).toLowerCase() === '.json'
     ? { assert: { type: 'json' } }
     : undefined;
 }
 
-function parseToJson(fixtures) {
+interface Fixture<T> {
+  name: string;
+  content: T
+}
+
+function parseToJson<T>(fixtures: Array<Fixture<T>>): Record<string, T> {
   return fixtures.reduce((data, fixture) => {
     data[fixture.name] = fixture.content;
     return data;
-  }, {});
+  }, {} as Record<string, T>);
 }
 
-async function loadJSON() {
+async function loadJSON(): Promise<Record<string, () => any>> {
   const filenames = await readdir(jsonDirectory);
   const fixtures = await Promise.all(
     filenames
@@ -31,7 +36,7 @@ async function loadJSON() {
       .map(async (filename) => {
         const name = parse(filename).name;
         const filePath = join(jsonDirectory, filename);
-        let content;
+        let content: any;
         try {
           content = (await import(filePath, getImportAssertion(filePath)))
             .default;
@@ -49,13 +54,13 @@ async function loadJSON() {
   return parseToJson(fixtures);
 }
 
-async function loadJSONStreams() {
+async function loadJSONStreams(): Promise<Record<string, (opts? : { objectMode: boolean }) => Readable>> {
   const filenames = await readdir(jsonDirectory);
   const fixtures = await Promise.all(
     filenames
       .filter((filename) => !filename.startsWith('.'))
       .map(async (filename) => {
-        let parsedContent = undefined;
+        let parsedContent: any  = undefined;
         try {
           parsedContent = (
             await import(
@@ -83,7 +88,7 @@ async function loadJSONStreams() {
   return parseToJson(fixtures);
 }
 
-async function loadCSV() {
+async function loadCSV(): Promise<Record<string, string>> {
   const filenames = await readdir(csvDirectory);
   const fixtures = await Promise.all(
     filenames
@@ -104,7 +109,7 @@ async function loadAllFixtures() {
     loadCSV(),
   ]);
 
-  const csvFixturesWithLinuxEol = Object.entries(csvFixtures).reduce(
+  const csvFixturesWithLinuxEol: Record<string, string> = Object.entries(csvFixtures).reduce(
     (obj, [key, value]) => ({
       ...obj,
       [key]:

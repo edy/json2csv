@@ -347,7 +347,7 @@ export default function (jsonFixtures, csvFixtures) {
       await parseInput(parser, jsonFixtures.default());
 
       t.fail('Exception expected');
-    } catch (error) {
+    } catch (err) {
       t.equal(
         error.message,
         `Invalid field info option. ${JSON.stringify(opts.fields[1])}`
@@ -370,7 +370,7 @@ export default function (jsonFixtures, csvFixtures) {
         await parseInput(parser, jsonFixtures.default());
 
         t.fail('Exception expected');
-      } catch (error) {
+      } catch (err) {
         t.equal(
           error.message,
           `Invalid field info option. ${JSON.stringify(opts.fields[1])}`

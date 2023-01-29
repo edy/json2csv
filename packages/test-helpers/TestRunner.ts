@@ -1,25 +1,33 @@
 import tape from 'tape';
 
+
+interface TestDefinition {
+  name: string;
+  test: tape.TestCase
+}
+
 export default class TestRunner {
-  constructor(name) {
+  private name: string ;
+  private tests: Array<TestDefinition> = [];
+  private before: Array<() => void> = [];
+  private after: Array<() => void> = [];
+
+  constructor(name: string) {
     this.name = name;
-    this.tests = [];
-    this.before = [];
-    this.after = [];
   }
 
-  add(name, test) {
+  add(name: string, test: tape.TestCase) {
     this.tests.push({
       name: this.name ? `${this.name} - ${name}` : this.name,
       test,
     });
   }
 
-  addBefore(func) {
+  addBefore(func: () => void) {
     this.before.push(func);
   }
 
-  addAfter(func) {
+  addAfter(func: () => void) {
     this.after.push(func);
   }
 
@@ -27,10 +35,10 @@ export default class TestRunner {
     try {
       await Promise.all(this.before.map((before) => before()));
       this.tests.forEach(({ name, test }) =>
-        tape(name, async (t) => {
+        tape(name, async (t: tape.Test) => {
           try {
             await test(t);
-          } catch (err) {
+          } catch (err: any) {
             t.fail(err);
           }
         })

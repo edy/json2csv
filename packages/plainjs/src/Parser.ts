@@ -1,7 +1,7 @@
 import JSON2CSVBase, { Json2CSVBaseOptions } from './BaseParser.js';
 import { flattenReducer, fastJoin } from './utils.js';
 
-export type ParserOptions<TRaw, T> = Json2CSVBaseOptions<TRaw, T>;
+export type ParserOptions<TRaw = object, T = TRaw> = Json2CSVBaseOptions<TRaw, T>;
 
 export default class JSON2CSVParser<
   TRaw extends object,
